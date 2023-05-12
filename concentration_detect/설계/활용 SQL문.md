@@ -53,6 +53,43 @@ CREATE TABLE TBL_EVENT (
 ```
 ### 2. 테이블 삭제
 ### 3. 가상 데이터 입력
+```SQL
+ -- 사용자 테이블 (TBL_USER)
+INSERT INTO TBL_USER (User_id, Password, User_name, Email, Registration_date)
+VALUES
+    (123456789, 'password1', 'User1', 'user1@example.com', NOW()),
+    (234567890, 'password2', 'User2', 'user2@example.com', NOW()),
+    (345678901, 'password3', 'User3', 'user3@example.com', NOW());
+
+-- 강사명 테이블 (TBL_TUTOR)
+INSERT INTO TBL_TUTOR (Tutor_id, Password, Tutor_name, Email, Registration_date)
+VALUES
+    (987654321, 'password4', 'Tutor1', 'tutor1@example.com', NOW()),
+    (876543210, 'password5', 'Tutor2', 'tutor2@example.com', NOW()),
+    (765432109, 'password6', 'Tutor3', 'tutor3@example.com', NOW());
+
+-- 강의정보 테이블 (TBL_LECTURE)
+INSERT INTO TBL_LECTURE (Lecture_id, Lecture_name, Tutor_id, Recommended, Lecture_url, Lecture_length, Registration_date)
+VALUES
+    (123456789, 'Lecture1', 987654321, 60.5, 'https://lecture1.com', 3600, NOW()),
+    (234567890, 'Lecture2', 876543210, 45.5, 'https://lecture2.com', 2700, NOW()),
+    (345678901, 'Lecture3', 765432109, 30.5, 'https://lecture3.com', 1800, NOW());
+
+-- 수강결과 테이블 (TBL_RESULT)
+INSERT INTO TBL_RESULT (Result_id, User_id, Lecture_id, Capture_start, Capture_end, Start_log, End_log, Registration_date)
+VALUES
+    (12345678901, 123456789, 123456789, '09:00:00', '10:00:00', '09:00:00', '10:00:00', NOW()),
+    (23456789012, 234567890, 234567890, '11:00:00', '12:00:00', '11:00:00', '12:00:00', NOW()),
+    (34567890123, 345678901, 345678901, '13:00:00', '14:00:00', '13:00:00', '14:00:00', NOW());
+
+-- 졸음 이벤트 테이블 (TBL_EVENT)
+INSERT INTO TBL_EVENT (Event_id, Result_id, Start_time, End_time, Continued_time, Registration_date)
+VALUES
+    (123456789012, 12345678901, '2023-05-12 09:30:00', '2023-05-12 09:45:00', 900, NOW()),
+    (234567890123, 23456789012, '2023-05-12 11:15:00', '2023-05-12 11:30:00', 900, NOW()),
+    (345678901234, 34567890123, '2023-05-12 13:30:00', '2023-05
+
+```
 
 ## II. 시스템 활용 SQL문
 ### 1. 사용자별 강의 목록
@@ -67,4 +104,28 @@ WHERE TBL_USER.User_id = [사용자 ID];
 ### 2. 강의명에 해당하는 동영상 정보
 ```SQL
 SELECT * FROM TBL_LECTURE WHERE Lecture_name = [강의명];
+```
+### 3. 특정 강사의 과목별 집중도
+```SQL
+SELECT TBL_LECTURE.Lecture_name, TBL_LECTURE.Recommended
+FROM TBL_LECTURE
+INNER JOIN TBL_TUTOR ON TBL_LECTURE.Tutor_id = TBL_TUTOR.Tutor_id
+WHERE TBL_TUTOR.Tutor_id = [강사 ID];
+
+```
+### 4. 사용자가 선택한 과목별 집중도
+```SQL
+SELECT TBL_LECTURE.Lecture_name, TBL_LECTURE.Recommended
+FROM TBL_LECTURE
+INNER JOIN TBL_RESULT ON TBL_LECTURE.Lecture_id = TBL_RESULT.Lecture_id
+WHERE TBL_RESULT.User_id = [사용자 ID];
+
+```
+### 5. 졸음 이벤트 insert
+```SQL
+INSERT INTO TBL_RESULT (User_id, Lecture_id, Capture_start, Capture_end, Start_log, End_log, Registration_date)
+VALUES ([사용자 ID], [강의 ID], [캡쳐 시작 시간], [캡쳐 종료 시간], [수강 시작 로그], [수강 종료 로그], NOW());
+
+INSERT INTO TBL_EVENT (Result_id, Start_time, End_time, Continued_time, Registration_date)
+VALUES (LAST_INSERT_ID(), [졸음 시작 시간], [졸음 종료 시간], [졸음 지속 시간], NOW());
 ```
