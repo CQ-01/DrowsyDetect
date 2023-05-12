@@ -1,0 +1,70 @@
+## I. 테이블 구축 및 관리
+### 1. 테이블 생성
+```SQL
+CREATE TABLE TBL_USER (
+    User_id INT AUTO_INCREMENT PRIMARY KEY,
+    Password VARCHAR(50) NOT NULL,
+    User_name VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) NOT NULL,
+    Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE TBL_TUTOR (
+    Tutor_id INT AUTO_INCREMENT PRIMARY KEY,
+	Password VARCHAR(50) NOT NULL,
+	Tutor_name VARCHAR(50) NOT NULL,
+	Email VARCHAR(100) NOT NULL,
+	Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE TBL_LECTURE (
+	Lecture_id INT AUTO_INCREMENT PRIMARY KEY,
+	Lecture_name VARCHAR(100) NOT NULL,
+	Tutor_id INT NOT NULL,
+	Recommended FLOAT NOT NULL,
+	Lecture_url VARCHAR(250) NOT NULL,
+	Lecture_length INT NOT NULL,
+	Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREGIN KEY (Tutor_id) REFERENCES TBL_TUTOR(Tutor_id)
+);
+
+CREATE TABLE TBL_RESULT (
+    Result_id INT AUTO_INCREMENT PRIMARY KEY,
+    User_id INT NOT NULL,
+    Lecture_id INT NOT NULL,
+    Capture_start TIME NOT NULL,
+    Capture_end TIME NOT NULL,
+    Start_log TIME NOT NULL,
+    End_log TIME NOT NULL,
+    Registration date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (User_id) REFERENCES TBL_USER(User_id),
+    FOREIGN KEY (Lecture_id) REFERENCES TBL_LECTURE(Lecture_id)
+);
+
+CREATE TABLE TBL_EVENT (
+    Event_id INT AUTO_INCREMENT PRIMARY KEY,
+    Result_id INT NOT NULL,
+    Start_time DATETIME NOT NULL,
+    End_time DATETIME NOT NULL,
+    Continued_time INT NOT NULL,
+    Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    FOREIGN KEY (Result_id) REFERENCES TBL_RESULT(Result_id)
+);
+```
+### 2. 테이블 삭제
+### 3. 가상 데이터 입력
+
+## II. 시스템 활용 SQL문
+### 1. 사용자별 강의 목록
+```SQL
+SELECT TBL_USER.User_name, TBL_LECTURE.Lecture_name
+FROM TBL_USER
+INNER JOIN TBL_RESULT ON TBL_USER.User_id = TBL_RESULT.User_id
+INNER JOIN TBL_LECTURE ON TBL_RESULT.Lecture_id = TBL_LECTURE.Lecture_id
+WHERE TBL_USER.User_id = [사용자 ID];
+```
+
+### 2. 강의명에 해당하는 동영상 정보
+```SQL
+SELECT * FROM TBL_LECTURE WHERE Lecture_name = [강의명];
+```
