@@ -1,8 +1,16 @@
 ## I. 테이블 구축 및 관리
+```SQL
+-- DB 생성
+CREATE DATABASE [DB명];
+USE [DB명];
+
+-- 테이블 일람
+SHOW TABLES;
+```
 ### 1. 테이블 생성
 ```SQL
 CREATE TABLE TBL_USER (
-    User_id INT AUTO_INCREMENT PRIMARY KEY,
+    User_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     Password VARCHAR(50) NOT NULL,
     User_name VARCHAR(50) NOT NULL,
     Email VARCHAR(100) NOT NULL,
@@ -10,7 +18,7 @@ CREATE TABLE TBL_USER (
 );
 
 CREATE TABLE TBL_TUTOR (
-    Tutor_id INT AUTO_INCREMENT PRIMARY KEY,
+    Tutor_id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	Password VARCHAR(50) NOT NULL,
 	Tutor_name VARCHAR(50) NOT NULL,
 	Email VARCHAR(100) NOT NULL,
@@ -18,40 +26,50 @@ CREATE TABLE TBL_TUTOR (
 );
 
 CREATE TABLE TBL_LECTURE (
-	Lecture_id INT AUTO_INCREMENT PRIMARY KEY,
+	Lecture_id BIGINT AUTO_INCREMENT PRIMARY KEY,
 	Lecture_name VARCHAR(100) NOT NULL,
-	Tutor_id INT NOT NULL,
+	Tutor_id BIGINT NOT NULL,
 	Recommended FLOAT NOT NULL,
 	Lecture_url VARCHAR(250) NOT NULL,
 	Lecture_length INT NOT NULL,
 	Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-	FOREGIN KEY (Tutor_id) REFERENCES TBL_TUTOR(Tutor_id)
+	FOREIGN KEY (Tutor_id) REFERENCES TBL_TUTOR(Tutor_id)
 );
 
 CREATE TABLE TBL_RESULT (
-    Result_id INT AUTO_INCREMENT PRIMARY KEY,
-    User_id INT NOT NULL,
-    Lecture_id INT NOT NULL,
+    Result_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    User_id BIGINT NOT NULL,
+    Lecture_id BIGINT NOT NULL,
     Capture_start TIME NOT NULL,
     Capture_end TIME NOT NULL,
     Start_log TIME NOT NULL,
     End_log TIME NOT NULL,
-    Registration date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     FOREIGN KEY (User_id) REFERENCES TBL_USER(User_id),
     FOREIGN KEY (Lecture_id) REFERENCES TBL_LECTURE(Lecture_id)
 );
 
 CREATE TABLE TBL_EVENT (
-    Event_id INT AUTO_INCREMENT PRIMARY KEY,
-    Result_id INT NOT NULL,
+    Event_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    Result_id BIGINT NOT NULL,
+    Lecture_id bigint not null,
     Start_time DATETIME NOT NULL,
     End_time DATETIME NOT NULL,
     Continued_time INT NOT NULL,
     Registration_date DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    FOREIGN KEY (Result_id) REFERENCES TBL_RESULT(Result_id)
+    FOREIGN KEY (Result_id) REFERENCES TBL_RESULT(Result_id),
+    FOREIGN KEY (Lecture_id) REFERENCES TBL_LECTURE(Lecture_id)
 );
 ```
-### 2. 테이블 삭제
+### 2. 테이블 수정
+> FOREIGN KEY 설정 때문에 반드시 아래 순서로 삭제해야 함
+
+    DROP TABLE tbl_event;
+    DROP TABLE tbl_result;
+    DROP TABLE tbl_lecture;
+    DROP TABLE tbl_tutor;
+    DROP TABLE tbl_user;
+
 ### 3. 가상 데이터 입력
 ```SQL
  -- 사용자 테이블 (TBL_USER)
@@ -83,12 +101,11 @@ VALUES
     (34567890123, 345678901, 345678901, '13:00:00', '14:00:00', '13:00:00', '14:00:00', NOW());
 
 -- 졸음 이벤트 테이블 (TBL_EVENT)
-INSERT INTO TBL_EVENT (Event_id, Result_id, Start_time, End_time, Continued_time, Registration_date)
+INSERT INTO TBL_EVENT (Event_id, Result_id, Lecture_id, Start_time, End_time, Continued_time, Registration_date)
 VALUES
-    (123456789012, 12345678901, '2023-05-12 09:30:00', '2023-05-12 09:45:00', 900, NOW()),
-    (234567890123, 23456789012, '2023-05-12 11:15:00', '2023-05-12 11:30:00', 900, NOW()),
-    (345678901234, 34567890123, '2023-05-12 13:30:00', '2023-05
-
+    (123456789012, 12345678901, 123456789, '2023-05-12 09:30:00', '2023-05-12 09:45:00', 900, NOW()),
+    (234567890123, 23456789012, 234567890, '2023-05-12 11:15:00', '2023-05-12 11:30:00', 900, NOW()),
+    (345678901234, 34567890123, 345678901, '2023-05-12 13:30:00', '2023-05-12 13:00:00', 900, NOW());
 ```
 
 ## II. 시스템 활용 SQL문
@@ -103,15 +120,15 @@ WHERE TBL_USER.User_id = [사용자 ID];
 
 ### 2. 강의명에 해당하는 동영상 정보
 ```SQL
-SELECT * FROM TBL_LECTURE WHERE Lecture_name = [강의명];
+SELECT * FROM TBL_LECTURE WHERE Lecture_name = ['강의명'];
 ```
 ### 3. 특정 강사의 과목별 집중도
 ```SQL
-SELECT TBL_LECTURE.Lecture_name, TBL_LECTURE.Recommended
-FROM TBL_LECTURE
-INNER JOIN TBL_TUTOR ON TBL_LECTURE.Tutor_id = TBL_TUTOR.Tutor_id
-WHERE TBL_TUTOR.Tutor_id = [강사 ID];
-
+SELECT Lecture_name, Recommended, SUM(((Lecture_length * 60) - TIMEDIFF(End_time, Start_time)) / (Lecture_length * 60) * 100) AS Awake_time_ratio
+FROM TBL_LECTURE L
+INNER JOIN TBL_TUTOR T ON L.Tutor_id = T.Tutor_id
+INNER JOIN TBL_EVENT E ON L.Lecture_id = E.Lecture_id
+WHERE T.Tutor_id = [강사id];
 ```
 ### 4. 사용자가 선택한 과목별 집중도
 ```SQL
@@ -119,7 +136,6 @@ SELECT TBL_LECTURE.Lecture_name, TBL_LECTURE.Recommended
 FROM TBL_LECTURE
 INNER JOIN TBL_RESULT ON TBL_LECTURE.Lecture_id = TBL_RESULT.Lecture_id
 WHERE TBL_RESULT.User_id = [사용자 ID];
-
 ```
 ### 5. 졸음 이벤트 insert
 ```SQL
