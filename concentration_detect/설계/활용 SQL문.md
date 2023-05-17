@@ -124,18 +124,20 @@ SELECT * FROM TBL_LECTURE WHERE Lecture_name = ['강의명'];
 ```
 ### 3. 특정 강사의 과목별 집중도
 ```SQL
-SELECT Lecture_name, Recommended, SUM(((Lecture_length * 60) - TIMEDIFF(End_time, Start_time)) / (Lecture_length * 60) * 100) AS Awake_time_ratio
+SELECT Lecture_name, Recommended, SUM(((Lecture_length) - TIMEDIFF(End_time, Start_time)) / (Lecture_length) * 100) AS Awake_time_ratio
 FROM TBL_LECTURE L
 INNER JOIN TBL_TUTOR T ON L.Tutor_id = T.Tutor_id
 INNER JOIN TBL_EVENT E ON L.Lecture_id = E.Lecture_id
-WHERE T.Tutor_id = [강사id];
+WHERE T.Tutor_id = [강사 id];
 ```
 ### 4. 사용자가 선택한 과목별 집중도
 ```SQL
-SELECT TBL_LECTURE.Lecture_name, TBL_LECTURE.Recommended
-FROM TBL_LECTURE
-INNER JOIN TBL_RESULT ON TBL_LECTURE.Lecture_id = TBL_RESULT.Lecture_id
-WHERE TBL_RESULT.User_id = [사용자 ID];
+SELECT User_name, Recommended, SUM(((Lecture_length) - TIMEDIFF(End_time, Start_time)) / (Lecture_length) * 100) AS Awake_time_ratio
+FROM TBL_USER U
+INNER JOIN TBL_RESULT R ON U.User_id = R.User_id
+INNER JOIN TBL_EVENT E ON R.Result_id = E.Result_id
+INNER JOIN TBL_LECTURE L ON R.Lecture_id = L.Lecture_id
+WHERE R.User_id = [유저 id];
 ```
 ### 5. 졸음 이벤트 insert
 ```SQL
