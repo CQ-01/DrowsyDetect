@@ -141,9 +141,10 @@ WHERE R.User_id = [유저 id];
 ```
 ### 5. 졸음 이벤트 insert
 ```SQL
-INSERT INTO TBL_RESULT (User_id, Lecture_id, Capture_start, Capture_end, Start_log, End_log, Registration_date)
-VALUES ([사용자 ID], [강의 ID], [캡쳐 시작 시간], [캡쳐 종료 시간], [수강 시작 로그], [수강 종료 로그], NOW());
-
-INSERT INTO TBL_EVENT (Result_id, Start_time, End_time, Continued_time, Registration_date)
-VALUES (LAST_INSERT_ID(), [졸음 시작 시간], [졸음 종료 시간], [졸음 지속 시간], NOW());
+INSERT INTO TBL_EVENT (Result_id, Lecture_id, Start_time, End_time, Continued_time, Registration_date)
+SELECT R.Result_id, R.Lecture_id, R.Start_log, R.End_log, 
+       TIMESTAMPDIFF(SECOND, R.Start_log, R.End_log) AS Continued_time, 
+       NOW() AS Registration_date
+FROM TBL_RESULT R
+WHERE [졸음 이벤트 조건];
 ```
