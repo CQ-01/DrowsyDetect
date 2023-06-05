@@ -15,3 +15,7 @@ conda activate "환경명"
 - conda prompt : `conda install -c conda-forge dlib`
   - 여전히 진행 안되었으나 하위 버전으로 설치하여 해결
 
+### DB와 장고프로젝트간 데이터 상이
+- migrations 폴더의 initial 파일 삭제 후 재이식하여 해결
+- 장고프로젝트는 테이블명 앞에 자동으로 '프로젝트명_'을 붙여 DB를 만듦, 이를 소스코드에 반영하여 해결
+- 장고프로젝트는 Foreign Key 컬럼에 자동으로 _id를 붙임, 이를 소스코드에 반영하여 해결
