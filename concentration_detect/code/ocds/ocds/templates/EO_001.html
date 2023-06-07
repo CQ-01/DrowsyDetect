@@ -1,0 +1,234 @@
+
+
+<!doctype html>                          
+<html lang="ko" > 
+    <head> <meta charset="utf-8">
+    <title>온라인 집중도 시스템</title> 
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <!-- <link href="static/style.css" rel="stylesheet"> -->
+    <link href="../static/css/ocds.css" rel="stylesheet">
+
+    </head>
+    <style>
+        @font-face {
+        font-family: 'GangwonEduPowerExtraBoldA';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+        }
+        *{
+            font-family: 'GangwonEduPowerExtraBoldA';
+        }
+        .best_taital{
+            color: #4b5eaa
+        }
+    
+        .top7{
+            margin-top: 150px;
+        }
+        
+        .container772{
+            width: 500px;
+            height: 380px;
+            background-color: #d4e3f5;
+            position: absolute;
+            left:36.9%;
+            top:27%;
+            border-radius: 50px;
+            margin-top: 40px;
+        }
+        #userid{
+            width: 400px;
+            padding: 7px 7px 7px 12px;
+            margin: 30px 10px 5px 20px;
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+            font-size: 20px;
+            margin-left: 40px
+            
+        }
+        #password{
+            width: 400px;
+            padding: 22px 7px 22px 12px;
+            margin: 10px 10px 15px 20px;
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+            font-size: 20px;
+            margin-left: 40px
+        }
+        textarea::placeholder {
+        color: #98a5d4;
+        }
+        .text777{
+            color: #4b5eaa;
+            font-size: 30px;
+            margin-top: 40px;
+
+        }
+        .btn{
+            border-radius: 15px;
+            background-color: #4b5eaa;
+            width: 300px;
+            height: 60px;
+            margin-bottom: 100px;
+            font-size: 27px;
+        }
+        .btn:hover{
+            background-color: #273776;
+        }
+        .container{
+            top: 75%;
+            left: 20%;
+            position: absolute;
+            height: 500px;
+        }
+        .container h2{
+            font-size: 30px;
+            color: #4b5eaa;
+        }
+        .table{
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+        }
+        .thead-light{
+            border-radius: 10px;
+            border: 1.5px solid #4b5eaa;
+        }
+        tbody button{
+            padding: 5px 10px 0px 10px;
+            border-radius: 5px;
+            background-color: #6a77ab;
+            color: #ffffff;
+        }
+    </style>
+    <body>
+        <div class="top7">
+            <div width="200px"> 
+                <h1 class="best_taital">온라인 수강 집중도 시스템</h1>
+                <div class="container77">
+                    <div class="container772" >
+                        <form id="user-info-form" onsubmit="return checkUserInfo();">
+                            {% csrf_token %}
+                            <h3 class="text777" style="align-content: center;text-align: center;">사용자 정보 입력</h3></form>
+                            <div class="form-group" id="" style="align-content: center;text-align: center;align-self: center;">
+                                <input type="text" class="form-control" id="userid" placeholder="ID를 입력하세요" style="height: 40px;">
+                                <br>
+                                <input type="password" class="form-control bg-light" id="password" placeholder="비밀번호를 입력하세요" style="height: 40px;">
+                                <br>
+                                <button class="btn btn-success" type="submit" onclick="checkUserInfo(); return false;">강의 목록 보기</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="container">
+            <h2 style="font-weight: bold;">수강 강의 목록</h2>
+            <p></p>
+            <div class="kk">
+                <table class="table table-bordered #4b5eaa">
+                    <thead class="thead-light">
+                    <tr>
+                        <th width="10%">순번</th>
+                        <th width="60%">강의명</th>
+                        <th width="10%">강사명</th>
+                        <th width="10%">강의시간</th>
+                        <th width="10%">집중도</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lecture in lectures %}
+                    <tr>
+                        <td width="5%">{% with forloop.counter as index %}{{index}}{% endwith %}                            
+                        </td>
+                        <td width="5%">{{lecture.lecture_name}}    
+                            <button onClick='openLecture({{lecture.user}}, {{lecture.lecture}})'>수강하기</button>
+                        </td>
+                        <td width="5%"><a href='#' Onclick='window.location.href = "/graphTutor?lecture="+{{lecture.lecture}}+"&tutor="+{{lecture.tutor}}, "lecture";'>{{lecture.tutor_name}}</a>
+                        </td>
+                        <td width="5%">{{lecture.lecture_length}}                            
+                        </td>
+                        <td width="5%"><button Onclick='openGraphLecture({{lecture.user}}, {{lecture.lecture}})' >보기</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>       <!--form-->                        
+        </div>
+    
+    </body>
+
+    <script>
+        function openLecture(userid, lectureid) {
+                //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+                window.location.href = "/lecture_play?user="+userid+"&lecture="+lectureid, "lecture";
+        }
+        function openGraphLecture(userid, lectureid) {
+            //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            window.location.href = "/graphLecture?user="+userid+"&lecture="+lectureid, "lecture";
+        }
+        function openGraphTutor(lectureid, tutorid) {
+            //alert ("./lecture_play?user="+userid+"&lecture="+lectureid, "lecture", "width=1000, height=1000");
+            window.location.href = "/graphTutor?lecture="+lectureid+"&tutor="+tutorid, "lecture";
+        }
+        function checkUserInfo() {
+            var userIdInput = document.getElementById('userid');
+            var passwordInput = document.getElementById('password');
+
+            // 입력한 값 확인
+            var userId = userIdInput.value;
+            var password = passwordInput.value;
+
+            // 값이 존재하는지 확인
+            if (userId && password) {
+                // AJAX를 통해 Django 뷰로 데이터 전송
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/check_user_info/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                var csrftoken = getCookie('csrftoken');
+                xhr.setRequestHeader('X-CSRFToken', csrftoken);                    
+
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.valid) {
+                            // 일치하는 경우 listup
+                            window.location.href='./get_lecture_name?user='+userId;
+                        } else {
+                            // 일치하지 않는 경우 경고 문구 출력
+                            alert('사용자 정보가 일치하지 않습니다.');
+                        }
+                    }
+                };
+                var data = JSON.stringify({ 'userId': userId, 'password': password });
+                xhr.send(data);
+            } else {
+                // 입력 필드가 비어있을 경우 경고 문구 출력
+                alert('ID와 비밀번호를 입력하세요.');
+            }
+        }
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // 토큰 이름으로 시작하는지 확인
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</html>

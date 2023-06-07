@@ -1,0 +1,124 @@
+
+
+<!doctype html>                          
+<html lang="ko" > 
+    <head> <meta charset="utf-8">
+    <title>온라인 수업 수강 화면</title> 
+    <link href="../static/css/bootstrap.css" rel="stylesheet">
+    <link href="../static/css/ocds.css" rel="stylesheet">
+
+
+    <script>
+        function test() {
+
+        }
+    </script>
+    </head>
+    <style>
+        @font-face {
+    font-family: 'GangwonEduPowerExtraBoldA';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/GangwonEduPowerExtraBoldA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    }
+    *{
+        font-family: 'GangwonEduPowerExtraBoldA';
+    }
+   
+    .hd{
+        margin: 100px;
+        position: absolute;
+        left: 33%;
+        font-size: 50px;
+        color: #4b5eaa;
+    }
+    .webcam{
+        margin: 170px 300px 0px 300px;
+        position: absolute;
+        left: 30%;
+        color: #4b5eaa;
+        font-size: 30px;
+    }
+
+    .vd{
+        margin: 250px 130px -130px 100px;
+        position: absolute;
+        left: 39.4%;
+        top: 37%;
+        font-size: 27px;
+        color: #4b5eaa;
+    }
+    .col-md-16{
+        position: absolute;
+        height: 600px;
+        left: 4%;
+        top: 6%;
+    }
+    .row{
+        background-color: #d4e3f5;
+        border-radius: 14px;
+        position: absolute;
+        left: 31.7%;
+        top: 73%;
+        width: 695px;
+        height: 410px;
+    }
+    </style>  
+    <body>
+        <div >
+            <div >
+                <div >
+                    <form method="POST">
+                    {% csrf_token %}
+                    </form>  
+                     {% block body %}
+                    <!--h1 class="webcam">웹캠 보기</h1-->
+                    <table>
+                        <tr>
+                            <td >
+                                <img src="http://127.0.0.1:8000/detectme?result={{ result.result }}" style="width:30%"/>
+                            </td>
+                            <td>
+                
+                            </td>
+                        </tr>
+                    </table>
+                {% endblock %}
+                </div>
+            </div>
+        </div>
+        <div >
+            <div >
+                <div >
+                    <header class="page-header">
+                        <h1 class="hd">온라인 수업 수강 화면</h1>
+                    </header>
+                    <div >
+                        <header class="page-header">
+                            <h1 class="vd">Video Detail</h1>
+                        </header>
+                        <div class="row">
+                            <div class="col-md-16">
+                                <div id="player" ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var tag = document.createElement('script');
+    
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                videoId: 'hHvZ7Cka7v0'
+            });
+        }
+    </script>
+</html>
